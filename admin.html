@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Tushar Graphics | Admin Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f6fa;
+            color: #222;
+        }
+
+        .header {
+            background: #111;
+            color: white;
+            padding: 18px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #ffcc00;
+        }
+
+        .admin-label {
+            background: #ffcc00;
+            color: #111;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .layout {
+            display: flex;
+            min-height: calc(100vh - 65px);
+        }
+
+        /* Sidebar */
+
+        .sidebar {
+            width: 230px;
+            background: #1c1c1c;
+            color: white;
+            padding-top: 25px;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 15px 25px;
+            color: #ddd;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #ffcc00;
+            color: #111;
+            font-weight: bold;
+        }
+
+        /* Main */
+
+        .main {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .welcome {
+            margin-bottom: 25px;
+        }
+
+        .welcome h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            color: #666;
+        }
+
+        /* Statistics */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 22px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .stat-card h3 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .stat-card .number {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .yellow {
+            border-left: 5px solid #ffcc00;
+        }
+
+        .green {
+            border-left: 5px solid #28a745;
+        }
+
+        .blue {
+            border-left: 5px solid #007bff;
+        }
+
+        .red {
+            border-left: 5px solid #dc3545;
+        }
+
+        /* Orders */
+
+        .orders-box {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .orders-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .orders-header h2 {
+            font-size: 22px;
+        }
+
+        .view-all {
+            background: #111;
+            color: white;
+            padding: 9px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
+        }
+
+        th,
+        td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8f8f8;
+            font-size: 14px;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        .status {
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .new {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .processing {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .completed {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .cancelled {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .action-btn {
+            border: none;
+            padding: 7px 11px;
+            border-radius: 7px;
+            cursor: pointer;
+            background: #111;
+            color: white;
+        }
+
+        .action-btn:hover {
+            background: #ffcc00;
+            color: #111;
+        }
+
+        /* Mobile */
+
+        @media (max-width: 900px) {
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 650px) {
+
+            .layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                display: flex;
+                overflow-x: auto;
+            }
+
+            .sidebar a {
+                white-space: nowrap;
+            }
+
+            .main {
+                padding: 20px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                padding: 15px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+        }
+/* ORDER POPUP */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    width: 90%;
+    max-width: 600px;
+    border-radius: 18px;
+    padding: 25px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-header h2 {
+    margin: 0;
+}
+
+.close {
+    font-size: 30px;
+    cursor: pointer;
+}
+
+.detail-row {
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.order-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+}
+
+.order-actions button {
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.order-actions button:hover {
+    opacity: 0.8;
+}
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+
+    <header class="header">
+
+        <div class="logo">
+            Tushar <span>Graphics</span>
+        </div>
+
+        <div class="admin-label">
+            Admin Dashboard
+        </div>
+
+    </header>
+
+
+    <div class="layout">
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <a href="#" class="active">
+                🏠 Dashboard
+            </a>
+
+            <a href="#">
+                📦 Orders
+            </a>
+
+            <a href="#">
+                🖨️ Services
+            </a>
+
+            <a href="#">
+                👥 Customers
+            </a>
+
+            <a href="#">
+                ⚙️ Settings
+            </a>
+
+            <a href="index.html">
+                🌐 View Website
+            </a>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+
+        <main class="main">
+
+            <div class="welcome">
+
+                <h1>Welcome, Tushar Graphics 👋</h1>
+
+                <p>
+                    Manage your printing orders and customers from here.
+                </p>
+
+            </div>
+
+
+            <!-- STATISTICS -->
+
+            <section class="stats">
+
+                <div class="stat-card yellow">
+
+                    <h3>Total Orders</h3>
+
+                    <div class="number">
+                        25
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card green">
+
+                    <h3>Completed Orders</h3>
+
+                    <div class="number">
+                        12
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card blue">
+
+                    <h3>Processing</h3>
+
+                    <div class="number">
+                        5
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card red">
+
+                    <h3>New Orders</h3>
+
+                    <div class="number">
+                        8
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- RECENT ORDERS -->
+
+            <section class="orders-box">
+
+                <div class="orders-header">
+
+                    <h2>Recent Orders</h2>
+
+                    <a href="#" class="view-all">
+                        View All
+                    </a>
+
+                </div>
+
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Order ID</th>
+
+                                <th>Customer</th>
+
+                                <th>Service</th>
+
+                                <th>Quantity</th>
+
+                                <th>Date</th>
+
+                                <th>Status</th>
+
+                                <th>Action</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            <tr>
+
+                                <td>TG-1001</td>
+
+                                <td>Rahul</td>
+
+                                <td>Visiting Cards</td>
+
+                                <td>500</td>
+
+                                <td>30 Sep 2026</td>
+
+                                <td>
+                               <span id="status-TG-1001" class="status new">
+                                        NEW
+                                     </span>
+                                 </td>
+
+                                <td>
+                                    <button class="action-btn" onclick="openOrder('TG-1001')">
+                                        View
+                                    </button>
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>TG-1002</td>
+
+                                <td>Priya</td>
+
+                                <td>Banner Printing</td>
+
+                                <td>2</td>
+
+                                <td>02 Oct 2026</td>
+
+                                <td>
+                                    <<span id="status-TG-1002" class="status processing">
+    PROCESSING
+</span>
+                                </td>
+
+                                <td>
+                                   <button class="action-btn" onclick="openOrder('TG-1002')">
+                                       View
+                                   </button>
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>TG-1003</td>
+
+                                <td>Amit</td>
+
+                                <td>LED Board</td>
+
+                                <td>1</td>
+
+                                <td>28 Sep 2026</td>
+
+                                <td>
+                                   <span id="status-TG-1003" class="status completed">
+    COMPLETED
+</span>
+                                </td>
+
+                                <td>
+                                   <button class="action-btn" onclick="openOrder('TG-1003')">
+                                     View
+                                 </button>
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>TG-1004</td>
+
+                                <td>Neha</td>
+
+                                <td>Wedding Cards</td>
+
+                                <td>300</td>
+
+                                <td>05 Oct 2026</td>
+
+                                <td>
+                                    <span id="status-TG-1004" class="status new">
+    NEW
+</span>
+                                </td>
+
+                                <td>
+                                    <button class="action-btn" onclick="openOrder('TG-1004')">
+                                      View
+                                   </button>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+<!-- ORDER DETAILS POPUP -->
+
+<div id="orderModal" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h2>Order Details</h2>
+
+            <span class="close" onclick="closeOrder()">
+                &times;
+            </span>
+        </div>
+
+        <div id="orderDetails"></div>
+
+        <div class="order-actions">
+
+            <button onclick="updateStatus('PROCESSING')">
+                🔄 Processing
+            </button>
+
+            <button onclick="updateStatus('COMPLETED')">
+                ✅ Completed
+            </button>
+
+            <button onclick="updateStatus('CANCELLED')">
+                ❌ Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const orders = {
+
+    "TG-1001": {
+        customer: "Rahul",
+        phone: "9876543210",
+        service: "Visiting Cards",
+        quantity: "500",
+        date: "30 Sep 2026",
+        size: "3.5 × 2 inch",
+        details: "Matte finish, double side",
+        status: "NEW"
+    },
+
+    "TG-1002": {
+        customer: "Priya",
+        phone: "9876543211",
+        service: "Banner Printing",
+        quantity: "2",
+        date: "02 Oct 2026",
+        size: "6 × 3 feet",
+        details: "High quality vinyl printing",
+        status: "PROCESSING"
+    },
+
+    "TG-1003": {
+        customer: "Amit",
+        phone: "9876543212",
+        service: "LED Board",
+        quantity: "1",
+        date: "28 Sep 2026",
+        size: "4 × 2 feet",
+        details: "LED illuminated board",
+        status: "COMPLETED"
+    },
+
+    "TG-1004": {
+        customer: "Neha",
+        phone: "9876543213",
+        service: "Wedding Cards",
+        quantity: "300",
+        date: "05 Oct 2026",
+        size: "Standard",
+        details: "Wedding invitation card",
+        status: "NEW"
+    }
+
+};
+
+
+let currentOrder = null;
+
+
+function openOrder(orderId) {
+
+    currentOrder = orderId;
+
+    const order = orders[orderId];
+
+    document.getElementById("orderDetails").innerHTML = `
+
+        <div class="detail-row">
+            <strong>Order ID:</strong>
+            ${orderId}
+        </div>
+
+        <div class="detail-row">
+            <strong>Customer:</strong>
+            ${order.customer}
+        </div>
+
+        <div class="detail-row">
+            <strong>Phone:</strong>
+            ${order.phone}
+        </div>
+
+        <div class="detail-row">
+            <strong>Service:</strong>
+            ${order.service}
+        </div>
+
+        <div class="detail-row">
+            <strong>Quantity:</strong>
+            ${order.quantity}
+        </div>
+
+        <div class="detail-row">
+            <strong>Size:</strong>
+            ${order.size}
+        </div>
+
+        <div class="detail-row">
+            <strong>Required Date:</strong>
+            ${order.date}
+        </div>
+
+        <div class="detail-row">
+            <strong>Instructions:</strong>
+            ${order.details}
+        </div>
+
+        <div class="detail-row">
+            <strong>Status:</strong>
+
+            <span id="currentStatus">
+                ${order.status}
+            </span>
+
+        </div>
+
+    `;
+
+    document.getElementById("orderModal").style.display = "flex";
+
+}
+
+
+function closeOrder() {
+
+    document.getElementById("orderModal").style.display = "none";
+
+}
+
+
+function updateStatus(newStatus) {
+
+    if (!currentOrder) {
+        return;
+    }
+
+    orders[currentOrder].status = newStatus;
+
+    document.getElementById("currentStatus").innerText = newStatus;
+
+    const tableStatus = document.getElementById("status-" + currentOrder);
+
+    if (tableStatus) {
+        tableStatus.innerText = newStatus;
+    }
+
+}
+</script>
+<!-- ORDER DETAILS POPUP -->
+
+<div id="orderModal" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2>Order Details</h2>
+
+            <span class="close" onclick="closeOrder()">&times;</span>
+
+        </div>
+
+        <div id="orderDetails"></div>
+
+        <div class="order-actions">
+
+            <button onclick="updateStatus('PROCESSING')">
+                🔄 Processing
+            </button>
+
+            <button onclick="updateStatus('COMPLETED')">
+                ✅ Completed
+            </button>
+
+            <button onclick="updateStatus('CANCELLED')">
+                ❌ Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+</body>
+</html>
